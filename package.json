@@ -1,0 +1,48 @@
+{
+    "name": "auth0-singpass-extension",
+    "version": "1.0.0",
+    "description": "Token endpoint for client assertion exchange",
+    "main": "index.js",
+    "scripts": {
+      "build": "npm run clean && npm run extension:build",
+      "clean": "rimraf dist",
+      "extension:build": "a0-ext build:server ./index.js ./dist && cp ./dist/auth0-singpass-extension.extension.$npm_package_version.js ./build/bundle.js"
+      },
+    "keywords": [
+        "auth0",
+        "client-assertion",
+        "singpass",
+        "private_key_jwt"
+    ],
+    "author": "vikasjayaram",
+    "license": "ISC",
+    "dependencies": {
+        "axios": "^0.21.1",
+        "body-parser": "~1.18.2",
+        "express": "~4.16.2",
+        "jose": "^3.15.4",
+        "uuid": "8.3.1"
+    },
+    "devDependencies": {
+        "auth0-extensions-cli": "^4.0.4"
+    },
+    "auth0-extension": {
+      "useBabel": false,
+      "useHashName": false,
+      "externals": [
+        "axios@0.21.1",
+        "body-parser@1.12.4",
+        "express@4.17.1",
+        "morgan@1.9.1",
+        "uuid@8.3.1",
+        "webtask-tools",
+        "winston@3.1.0",
+        "jose@3.18.0"
+      ],
+      "excluded": [
+        "safe-eval",
+        "express-conditional-middleware",
+        "pino"
+      ]
+    }
+}

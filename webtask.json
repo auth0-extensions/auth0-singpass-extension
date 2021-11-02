@@ -1,0 +1,72 @@
+{
+    "title": "Auth0 Singpass Proxy Extension",
+    "name": "auth0-singpass-extension",
+    "version": "1.0.0",
+    "author": "vikasjayaram",
+    "useHashName": false,
+    "description": "singpass proxy endpoint to support private key jwt / client assertion",
+    "type": "application",
+    "category": "end_user",
+    "logoUrl": "https://app.singpass.gov.sg/static/og_image.png",
+    "initialUrlPath": "/",
+    "keywords": [
+      "auth0",
+      "extension"
+    ],
+    "secrets": {
+      "AUTH0_CUSTOM_DOMAIN": {
+        "description": "YOUR_CUSTOM_DOMAIN",
+        "example": "auth.oauth101.net",
+        "required": true
+      },
+      "AUTH0_CLIENT_ID": {
+        "description": "Auth0 Client ID",
+        "required": true
+      },
+      "AUTH0_CLIENT_SECRET": {
+        "description": "Client Secret",
+        "required": true
+      },
+      "SINGPASS_ENVIRONMENT": {
+        "description": "Singpass Environment Staging",
+        "type": "select",
+        "allowMultiple": false,
+        "default": "https://stg-id.singpass.gov.sg",
+        "options": [
+          {
+            "value": "https://stg-id.singpass.gov.sg",
+            "text": "Staging"
+          }
+        ]
+      },
+      "SINGPASS_CLIENT_ID": {
+        "description": "Singpass Registered client_id",
+        "required": true
+      },
+      "SINGPASS_SIGNING_ALG": {
+        "description": "Signing Algorithm",
+        "type": "select",
+        "allowMultiple": false,
+        "default": "ES256",
+        "options": [
+          {
+            "value": "ES256",
+            "text": "ES256"
+          }
+        ]
+      },
+      "RELYING_PARTY_JWKS_ENDPOINT": {
+        "description": "Relying Party JSON Web Key",
+        "example": "https://rp.com/.well-known/jwks.json",
+        "required": true
+      },
+      "RELYING_PARTY_PRIVATE_KEY": {
+        "description": "Relying Party Private Key",
+        "required": true
+      },
+      "RELYING_PARTY_KID": {
+        "description": "Relying Party KID",
+        "required": true
+      }
+    }
+  }
