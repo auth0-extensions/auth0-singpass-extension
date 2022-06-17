@@ -150,7 +150,7 @@ app.post('/token', async function (req, res) {
             const { id_token } = response.data;
             const publicKey = await loadPublicKey(context.data);
             const code_v = new TextEncoder().encode(code_verifier);
-            const code_v_s256 = ccrypto.createHash('sha256').update(code_v).digest('base64').replace(/\//g, '_').replace(/\+/g, '-').replace(/=/g, '');
+            const code_v_s256 = crypto.createHash('sha256').update(code_v).digest('base64').replace(/\//g, '_').replace(/\+/g, '-').replace(/=/g, '');
             console.log(`nonce expected: ${code_v_s256}`);
             const { payload, protectedHeader } = await jwtVerify(id_token, publicKey, {
                 issuer: context.data.ISSUER,
