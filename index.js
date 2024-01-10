@@ -20,6 +20,10 @@ app.get('/.well-known/openid-configuration', (req, res) => {
         "token_endpoint": `${wtUrl}/token`
     });
 });
+
+/**
+ * /authorize is for embedded QR version of login which is now considered legacy
+ */
 app.get('/authorize', (req, res) => {
     const context = req.webtaskContext;
     if (!req.query.client_id) {
@@ -32,6 +36,10 @@ app.get('/authorize', (req, res) => {
     res.redirect(url);
 });
 
+/**
+ * /auth is for redirect based flow which is the recommended method now
+ * note that we probably don't need a new endpoint for redirection since it can all happen with Auth0's native upstream idp parameter mapping.
+ */
 app.get('/auth', (req, res) => {
     const context = req.webtaskContext;
     if (!req.query.client_id) {
