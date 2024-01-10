@@ -32,6 +32,17 @@ app.get('/authorize', (req, res) => {
     res.redirect(url);
 });
 
+app.get('/auth', (req, res) => {
+    const context = req.webtaskContext;
+    if (!req.query.client_id) {
+        return res.send(400, 'missing client_id');
+    }
+    if (context.data.AUTH0_CLIENT_ID !== req.query.client_id) {
+        return res.send(401, 'invalid client_id');
+    }
+    var url = `https://${context.data.SINGPASS_ENVIRONMENT}${req.url}&cient_id=${context.data.SINGPASS_CLIENT_ID}&state=${req.query.state}&nonce=${req.query.code_challenge}`;
+    res.redirect(url);
+});
 app.post('/token', async function (req, res) {
     const context = req.webtaskContext;
     const { client_id, client_secret, code, code_verifier, redirect_uri } = req.body;
