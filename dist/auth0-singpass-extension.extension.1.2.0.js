@@ -283,21 +283,81 @@ async function loadPublicKey(config) {
     }
 };
 
-async function generatePrivateKeyJWT(config) {
-    //const privateKeyPEM = crypto.createPrivateKey(config.PRIVATE_KEY.replace(/\\n/gm, '\n'));
-    const key = await loadPrivateKey(config);
-    const jwt = await new SignJWT({})
-        .setProtectedHeader({ alg: config.SINGPASS_SIGNING_ALG, kid: config.RELYING_PARTY_KID, typ: "JWT" })
-        .setIssuedAt()
-        .setIssuer(config.SINGPASS_CLIENT_ID)
-        .setSubject(config.SINGPASS_CLIENT_ID)
-        .setAudience(config.SINGPASS_ENVIRONMENT)
-        .setExpirationTime('2m') //The expiration time on or after which the JWT MUST NOT be accepted by NDI for processing. Additionally, NDI will not accept tokens with an exp longer than 2 minutes since iat. https://tools.ietf.org/html/rfc7519#section-4.1.4
-        .setJti(uuid.v4())
-        .sign(key);
-    return jwt;
-}
+// async function generatePrivateKeyJWT(config) {
+//     //const privateKeyPEM = crypto.createPrivateKey(config.PRIVATE_KEY.replace(/\\n/gm, '\n'));
+//     const key = await loadPrivateKey(config);
+//     const jwt = await new SignJWT({})
+//         .setProtectedHeader({ alg: config.SINGPASS_SIGNING_ALG, kid: config.RELYING_PARTY_KID, typ: "JWT" })
+//         .setIssuedAt()
+//         .setIssuer(config.SINGPASS_CLIENT_ID)
+//         .setSubject(config.SINGPASS_CLIENT_ID)
+//         .setAudience(config.SINGPASS_ENVIRONMENT)
+//         .setExpirationTime('2m') //The expiration time on or after which the JWT MUST NOT be accepted by NDI for processing. Additionally, NDI will not accept tokens with an exp longer than 2 minutes since iat. https://tools.ietf.org/html/rfc7519#section-4.1.4
+//         .setJti(uuid.v4())
+//         .sign(key);
+//     return jwt;
+// }
 
+async function generatePrivateKeyJWT(config) {
+    // A unique identifier for this specific request, useful for tracing logs.
+    const traceId = uuid.v4();
+    console.log(`[${traceId}] Attempting to generate Private Key JWT for client: ${config.SINGPASS_CLIENT_ID}`);
+
+    try {
+        // --- 1. Load the private key ---
+        console.log(`[${traceId}] -> Step 1: Loading private key...`);
+        const key = await loadPrivateKey(config);
+        console.log(`[${traceId}] -> Step 1: Private key loaded successfully.`);
+
+        // --- 2. Prepare JWT claims and headers ---
+        const jti = uuid.v4(); // Generate the JWT ID
+        const claims = {
+            iss: config.SINGPASS_CLIENT_ID,
+            sub: config.SINGPASS_CLIENT_ID,
+            aud: config.SINGPASS_ENVIRONMENT,
+            jti: jti
+        };
+        const header = {
+            alg: config.SINGPASS_SIGNING_ALG,
+            kid: config.RELYING_PARTY_KID,
+            typ: "JWT"
+        };
+        
+        console.log(`[${traceId}] -> Step 2: Preparing to sign JWT with the following details:`);
+        console.log(`   - Header: ${JSON.stringify(header)}`);
+        console.log(`   - Claims: ${JSON.stringify(claims)}`);
+        console.log(`   - Expiration: 2m`);
+
+        // --- 3. Sign the JWT ---
+        const jwt = await new SignJWT({})
+            .setProtectedHeader(header)
+            .setIssuedAt()
+            .setIssuer(claims.iss)
+            .setSubject(claims.sub)
+            .setAudience(claims.aud)
+            .setExpirationTime('2m')
+            .setJti(claims.jti)
+            .sign(key);
+
+        console.log(`[${traceId}] -> Step 3: JWT signed successfully.`);
+        
+        // Optionally, log a non-sensitive part of the JWT to confirm it was created.
+        // console.log(`[${traceId}] Generated JWT starts with: ${jwt.substring(0, 15)}...`);
+
+        return jwt;
+
+    } catch (error) {
+        // --- 4. Catch and log any errors ---
+        console.error(`### ERROR in generatePrivateKeyJWT [Trace ID: ${traceId}] ###`);
+        console.error("An error occurred while generating the client assertion JWT:", error.message);
+        
+        // Log the full error object for a detailed stack trace.
+        console.error("Full error details:", error);
+        
+        // It's crucial to re-throw the error so the calling function knows something went wrong.
+        throw error;
+    }
+}
 
 module.exports = Webtask.fromExpress(app);
 
