@@ -142,14 +142,14 @@ app.get('/auth', (req, res) => {
     if (context.data.AUTH0_CLIENT_ID !== req.query.client_id) {
         return res.send(401, 'invalid client_id');
     }
-    
     const parsedUrl = url.parse(req.url);
     const queryObj = querystring.parse(parsedUrl.query);
     delete queryObj.client_id;
     const newQueryString = querystring.stringify(queryObj);
     const newUrl = parsedUrl.pathname + '?' + newQueryString;
-    var url = `${context.data.SINGPASS_ENVIRONMENT}${newUrl}&client_id=${context.data.SINGPASS_CLIENT_ID}&nonce=${req.query.code_challenge}`;
-    res.redirect(url);
+    
+    const finalUrl = `${context.data.SINGPASS_ENVIRONMENT}${newUrl}&client_id=${context.data.SINGPASS_CLIENT_ID}&nonce=${req.query.code_challenge}`;
+    res.redirect(finalUrl);
 });
 app.post('/token', async function (req, res) {
     const context = req.webtaskContext;
