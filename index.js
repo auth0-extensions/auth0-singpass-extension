@@ -9,6 +9,8 @@ const uuid = require("uuid");
 const axios = require("axios").default;
 const qs = require('qs');
 var app = express();
+const url = require('url');
+const querystring = require('querystring');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -48,7 +50,13 @@ app.get('/auth', (req, res) => {
     if (context.data.AUTH0_CLIENT_ID !== req.query.client_id) {
         return res.send(401, 'invalid client_id');
     }
-    var url = `${context.data.SINGPASS_ENVIRONMENT}${req.url}&cient_id=${context.data.SINGPASS_CLIENT_ID}&state=${req.query.state}&nonce=${req.query.code_challenge}`;
+    
+    const parsedUrl = url.parse(req.url);
+    const queryObj = querystring.parse(parsedUrl.query);
+    delete queryObj.client_id;
+    const newQueryString = querystring.stringify(queryObj);
+    const newUrl = parsedUrl.pathname + '?' + newQueryString;
+    var url = `${context.data.SINGPASS_ENVIRONMENT}${newUrl}&client_id=${context.data.SINGPASS_CLIENT_ID}&nonce=${req.query.code_challenge}`;
     res.redirect(url);
 });
 app.post('/token', async function (req, res) {
