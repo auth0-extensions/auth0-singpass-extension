@@ -152,31 +152,32 @@ app.post('/verify', async function (req, res) {
 //     }
 // };
 
-
 async function loadPrivateKey(config) {
-    // 1. Check if the key even exists in the config
-    if (!config.RELYING_PARTY_PRIVATE_KEY) {
-        console.error("FATAL: RELYING_PARTY_PRIVATE_KEY is not defined in the configuration.");
-        throw new Error("Missing private key configuration.");
-    }
-
     try {
-        // 2. Ensure newlines are correctly formatted for the PEM parser.
-        const privateKeyPem = config.RELYING_PARTY_PRIVATE_KEY.replace(/\\n/g, '\n');
+        const privateKeyPem_from_config = config.RELYING_PARTY_PRIVATE_KEY;
 
-        // 3. Attempt to parse the key. This is likely where the original error occurs.
+        // --- THIS IS THE KEY DEBUGGING STEP ---
+        // Let's print the exact value we are receiving from the configuration.
+        console.log('--- Debugging Key Value ---');
+        console.log('Type:', typeof privateKeyPem_from_config);
+        console.log('Value received from config:', privateKeyPem_from_config);
+        console.log('--- End of Debugging ---');
+        // -----------------------------------------
+
+        if (!privateKeyPem_from_config || typeof privateKeyPem_from_config !== 'string') {
+             throw new Error("RELYING_PARTY_PRIVATE_KEY is missing, empty, or not a string.");
+        }
+
+        const privateKeyPem = privateKeyPem_from_config.replace(/\\n/g, '\n');
         const privateKey = await importPKCS8(privateKeyPem, config.SINGPASS_SIGNING_ALG);
         
         return privateKey;
 
     } catch (e) {
-        // 4. THIS IS THE CRITICAL FIX. Log the REAL error and then re-throw it.
         console.error("--- FAILED TO PARSE PRIVATE KEY ---");
-        console.error("The private key string from your configuration is likely malformed.");
-        console.error("Original Error:", e.message); // This will show the actual reason it failed.
+        console.error("The private key string from your configuration is likely malformed, empty, or missing.");
+        console.error("Original Error:", e.message);
         console.error("---------------------------------");
-        
-        // Re-throwing the error stops execution and prevents the "Received an instance of TypeError" issue.
         throw e;
     }
 };
