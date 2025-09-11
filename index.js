@@ -135,52 +135,81 @@ app.post('/verify', async function (req, res) {
         }
     }
 })
-// async function loadPrivateKey(config) {
-//     try {
-//         const privateKeyPem = config.RELYING_PARTY_PRIVATE_KEY.replace(/\\n/g, '\n');
-
-//         // importPKCS8 correctly parses the PEM and creates a valid key object for signing.
-//         const privateKey = await importPKCS8(privateKeyPem, config.SINGPASS_SIGNING_ALG);
-        
-//         return privateKey;
-//         // const response = await axios.get(config.RELYING_PARTY_JWKS_ENDPOINT);
-//         // const { keys } = response.data;
-//         // keys[0].d = config.RELYING_PARTY_PRIVATE_KEY;
-//         // return await parseJwk(keys[0], config.SINGPASS_SIGNING_ALG);;
-//     } catch (e) {
-//         return e;
-//     }
-// };
 
 async function loadPrivateKey(config) {
+    console.log('--- Debugging: Starting loadPrivateKey (Manual JWK Method) ---');
     try {
-        const privateKeyPem_from_config = config.RELYING_PARTY_PRIVATE_KEY;
+        // Log the raw private key value from config to ensure it's not empty or undefined
+        console.log('1. Raw private key string from config (first 30 chars):', config.RELYING_PARTY_PRIVATE_KEY);
 
-        // --- THIS IS THE KEY DEBUGGING STEP ---
-        // Let's print the exact value we are receiving from the configuration.
-        console.log('--- Debugging Key Value ---');
-        console.log('Type:', typeof privateKeyPem_from_config);
-        console.log('Value received from config:', privateKeyPem_from_config);
-        console.log('--- End of Debugging ---');
-        // -----------------------------------------
+        // Log the endpoint we are about to call
+        console.log('2. Fetching public key components from JWKS endpoint:', config.RELYING_PARTY_JWKS_ENDPOINT);
+        const response = await axios.get(config.RELYING_PARTY_JWKS_ENDPOINT);
+        const { keys } = response.data;
 
-        if (!privateKeyPem_from_config || typeof privateKeyPem_from_config !== 'string') {
-             throw new Error("RELYING_PARTY_PRIVATE_KEY is missing, empty, or not a string.");
+        if (!keys || keys.length === 0) {
+            console.error('ERROR: No keys found at the JWKS endpoint.');
+            throw new Error('No keys found at JWKS endpoint.');
         }
 
-        const privateKeyPem = privateKeyPem_from_config.replace(/\\n/g, '\n');
-        const privateKey = await importPKCS8(privateKeyPem, config.SINGPASS_SIGNING_ALG);
+        console.log('3. Successfully fetched public key. Public components are:', JSON.stringify(keys[0]));
+
+        // This is the manual and risky step
+        const manuallyConstructedJwk = { ...keys[0] }; // Create a copy
+        manuallyConstructedJwk.d = config.RELYING_PARTY_PRIVATE_KEY; // Inject the 'd' parameter
+
+        console.log('4. Manually constructed the full JWK object to be parsed. It includes public parts from the URL and the private part from config.');
+        // We log the object without the private key 'd' for security.
+        console.log('   JWK structure (excluding "d"):', JSON.stringify({ ...manuallyConstructedJwk, d: '[REDACTED FOR LOGS]' }));
+
+        // Attempt to parse the manually created object
+        console.log('5. Calling parseJwk with the manually constructed object...');
+        const privateKey = await parseJwk(manuallyConstructedJwk, config.SINGPASS_SIGNING_ALG);
         
+        console.log('6. Successfully parsed the manually constructed JWK.');
         return privateKey;
 
     } catch (e) {
-        console.error("--- FAILED TO PARSE PRIVATE KEY ---");
-        console.error("The private key string from your configuration is likely malformed, empty, or missing.");
-        console.error("Original Error:", e.message);
-        console.error("---------------------------------");
+        // This catch block is crucial for proper error reporting.
+        console.error('### ERROR in loadPrivateKey ###');
+        console.error('An error occurred during the manual JWK construction process.');
+        console.error('Error Message:', e.message);
+        console.error('Full Error Stack:', e);
+        
+        // Re-throw the error so the calling function knows something went wrong
         throw e;
     }
 };
+
+// async function loadPrivateKey(config) {
+//     try {
+//         const privateKeyPem_from_config = config.RELYING_PARTY_PRIVATE_KEY;
+
+//         // --- THIS IS THE KEY DEBUGGING STEP ---
+//         // Let's print the exact value we are receiving from the configuration.
+//         console.log('--- Debugging Key Value ---');
+//         console.log('Type:', typeof privateKeyPem_from_config);
+//         console.log('Value received from config:', privateKeyPem_from_config);
+//         console.log('--- End of Debugging ---');
+//         // -----------------------------------------
+
+//         if (!privateKeyPem_from_config || typeof privateKeyPem_from_config !== 'string') {
+//              throw new Error("RELYING_PARTY_PRIVATE_KEY is missing, empty, or not a string.");
+//         }
+
+//         const privateKeyPem = privateKeyPem_from_config.replace(/\\n/g, '\n');
+//         const privateKey = await importPKCS8(privateKeyPem, config.SINGPASS_SIGNING_ALG);
+        
+//         return privateKey;
+
+//     } catch (e) {
+//         console.error("--- FAILED TO PARSE PRIVATE KEY ---");
+//         console.error("The private key string from your configuration is likely malformed, empty, or missing.");
+//         console.error("Original Error:", e.message);
+//         console.error("---------------------------------");
+//         throw e;
+//     }
+// };
 
 async function loadPublicKey(config) {
     try {
