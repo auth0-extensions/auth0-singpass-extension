@@ -11,6 +11,7 @@ const qs = require('qs');
 var app = express();
 const url = require('url');
 const querystring = require('querystring');
+const { importPKCS8 } = require('jose/dist/node/cjs/key/import');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -136,14 +137,22 @@ app.post('/verify', async function (req, res) {
 })
 async function loadPrivateKey(config) {
     try {
-        const response = await axios.get(config.RELYING_PARTY_JWKS_ENDPOINT);
-        const { keys } = response.data;
-        keys[0].d = config.RELYING_PARTY_PRIVATE_KEY;
-        return await parseJwk(keys[0], config.SINGPASS_SIGNING_ALG);;
+        const privateKeyPem = config.RELYING_PARTY_PRIVATE_KEY.replace(/\\n/g, '\n');
+
+        // importPKCS8 correctly parses the PEM and creates a valid key object for signing.
+        const privateKey = await importPKCS8(privateKeyPem, config.SINGPASS_SIGNING_ALG);
+        
+        return privateKey;
+        // const response = await axios.get(config.RELYING_PARTY_JWKS_ENDPOINT);
+        // const { keys } = response.data;
+        // keys[0].d = config.RELYING_PARTY_PRIVATE_KEY;
+        // return await parseJwk(keys[0], config.SINGPASS_SIGNING_ALG);;
     } catch (e) {
         return e;
     }
 };
+
+
 
 async function loadPublicKey(config) {
     try {
