@@ -135,24 +135,51 @@ app.post('/verify', async function (req, res) {
         }
     }
 })
+// async function loadPrivateKey(config) {
+//     try {
+//         const privateKeyPem = config.RELYING_PARTY_PRIVATE_KEY.replace(/\\n/g, '\n');
+
+//         // importPKCS8 correctly parses the PEM and creates a valid key object for signing.
+//         const privateKey = await importPKCS8(privateKeyPem, config.SINGPASS_SIGNING_ALG);
+        
+//         return privateKey;
+//         // const response = await axios.get(config.RELYING_PARTY_JWKS_ENDPOINT);
+//         // const { keys } = response.data;
+//         // keys[0].d = config.RELYING_PARTY_PRIVATE_KEY;
+//         // return await parseJwk(keys[0], config.SINGPASS_SIGNING_ALG);;
+//     } catch (e) {
+//         return e;
+//     }
+// };
+
+
 async function loadPrivateKey(config) {
+    // 1. Check if the key even exists in the config
+    if (!config.RELYING_PARTY_PRIVATE_KEY) {
+        console.error("FATAL: RELYING_PARTY_PRIVATE_KEY is not defined in the configuration.");
+        throw new Error("Missing private key configuration.");
+    }
+
     try {
+        // 2. Ensure newlines are correctly formatted for the PEM parser.
         const privateKeyPem = config.RELYING_PARTY_PRIVATE_KEY.replace(/\\n/g, '\n');
 
-        // importPKCS8 correctly parses the PEM and creates a valid key object for signing.
+        // 3. Attempt to parse the key. This is likely where the original error occurs.
         const privateKey = await importPKCS8(privateKeyPem, config.SINGPASS_SIGNING_ALG);
         
         return privateKey;
-        // const response = await axios.get(config.RELYING_PARTY_JWKS_ENDPOINT);
-        // const { keys } = response.data;
-        // keys[0].d = config.RELYING_PARTY_PRIVATE_KEY;
-        // return await parseJwk(keys[0], config.SINGPASS_SIGNING_ALG);;
+
     } catch (e) {
-        return e;
+        // 4. THIS IS THE CRITICAL FIX. Log the REAL error and then re-throw it.
+        console.error("--- FAILED TO PARSE PRIVATE KEY ---");
+        console.error("The private key string from your configuration is likely malformed.");
+        console.error("Original Error:", e.message); // This will show the actual reason it failed.
+        console.error("---------------------------------");
+        
+        // Re-throwing the error stops execution and prevents the "Received an instance of TypeError" issue.
+        throw e;
     }
 };
-
-
 
 async function loadPublicKey(config) {
     try {
