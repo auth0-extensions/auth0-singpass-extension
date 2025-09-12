@@ -88,22 +88,26 @@ module.exports =
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-var express = __webpack_require__(1);
-var Webtask = __webpack_require__(2);
-var bodyParser = __webpack_require__(3);
-const { SignJWT } = __webpack_require__(4);
-const { parseJwk } = __webpack_require__(30);
-const { jwtVerify } = __webpack_require__(36);
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function(module) {/* harmony import */ var jose_dist_node_cjs_jws_compact_sign__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
+/* harmony import */ var jose_dist_node_cjs_jws_compact_sign__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jose_dist_node_cjs_jws_compact_sign__WEBPACK_IMPORTED_MODULE_0__);
+var express = __webpack_require__(2);
+var Webtask = __webpack_require__(3);
+var bodyParser = __webpack_require__(4);
+
+const { parseJwk } = __webpack_require__(26);
+const { jwtVerify } = __webpack_require__(33);
 const crypto = __webpack_require__(10);
-const uuid = __webpack_require__(42);
-const axios = __webpack_require__(43).default;
-const qs = __webpack_require__(44);
+const uuid = __webpack_require__(41);
+const axios = __webpack_require__(42).default;
+const qs = __webpack_require__(43);
 var app = express();
-const url = __webpack_require__(49);
-const querystring = __webpack_require__(50);
-const { importPKCS8 } = __webpack_require__(31);
+const url = __webpack_require__(48);
+const querystring = __webpack_require__(49);
+const { importPKCS8 } = __webpack_require__(27);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -329,6 +333,8 @@ async function loadPublicKey(config) {
 // }
 
 async function generatePrivateKeyJWT(config) {
+    
+    const ecPrivateKey = await importPKCS8(config.RELYING_PARTY_PRIVATE_KEY, 'ES256');
     // A unique identifier for this specific request, useful for tracing logs.
     const traceId = uuid.v4();
     console.log(`[${traceId}] Attempting to generate Private Key JWT for client: ${config.SINGPASS_CLIENT_ID}`);
@@ -336,7 +342,7 @@ async function generatePrivateKeyJWT(config) {
     try {
         // --- 1. Load the private key ---
         console.log(`[${traceId}] -> Step 1: Loading private key...`);
-        const key = await loadPrivateKey(config);
+       // const key = await loadPrivateKey(config);
         console.log(`[${traceId}] -> Step 1: Private key loaded successfully.`);
 
         // --- 2. Prepare JWT claims and headers ---
@@ -359,7 +365,7 @@ async function generatePrivateKeyJWT(config) {
         console.log(`   - Expiration: 2m`);
 
         // --- 3. Sign the JWT ---
-        const jwt = await new SignJWT({})
+        const jwt = await new jose_dist_node_cjs_jws_compact_sign__WEBPACK_IMPORTED_MODULE_0__["CompactSign"]({})
             .setProtectedHeader(header)
             .setIssuedAt()
             .setIssuer(claims.iss)
@@ -367,7 +373,7 @@ async function generatePrivateKeyJWT(config) {
             .setAudience(claims.aud)
             .setExpirationTime('2m')
             .setJti(claims.jti)
-            .sign(key);
+            .sign(ecPrivateKey);
 
         console.log(`[${traceId}] -> Step 3: JWT signed successfully.`);
         
@@ -391,57 +397,55 @@ async function generatePrivateKeyJWT(config) {
 
 module.exports = Webtask.fromExpress(app);
 
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(1)(module)))
 
 /***/ }),
 /* 1 */
 /***/ (function(module, exports) {
 
-module.exports = require("express@4.17.1");
+module.exports = function(originalModule) {
+	if (!originalModule.webpackPolyfill) {
+		var module = Object.create(originalModule);
+		// module.parent = undefined by default
+		if (!module.children) module.children = [];
+		Object.defineProperty(module, "loaded", {
+			enumerable: true,
+			get: function() {
+				return module.l;
+			}
+		});
+		Object.defineProperty(module, "id", {
+			enumerable: true,
+			get: function() {
+				return module.i;
+			}
+		});
+		Object.defineProperty(module, "exports", {
+			enumerable: true
+		});
+		module.webpackPolyfill = 1;
+	}
+	return module;
+};
+
 
 /***/ }),
 /* 2 */
 /***/ (function(module, exports) {
 
-module.exports = require("webtask-tools");
+module.exports = require("express@4.17.1");
 
 /***/ }),
 /* 3 */
 /***/ (function(module, exports) {
 
-module.exports = require("body-parser@1.12.4");
+module.exports = require("webtask-tools");
 
 /***/ }),
 /* 4 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.SignJWT = void 0;
-const sign_js_1 = __webpack_require__(5);
-const errors_js_1 = __webpack_require__(13);
-const buffer_utils_js_1 = __webpack_require__(8);
-const jwt_producer_js_1 = __webpack_require__(26);
-class SignJWT extends jwt_producer_js_1.default {
-    setProtectedHeader(protectedHeader) {
-        this._protectedHeader = protectedHeader;
-        return this;
-    }
-    async sign(key, options) {
-        var _a;
-        const sig = new sign_js_1.default(buffer_utils_js_1.encoder.encode(JSON.stringify(this._payload)));
-        sig.setProtectedHeader(this._protectedHeader);
-        if (Array.isArray((_a = this._protectedHeader) === null || _a === void 0 ? void 0 : _a.crit) &&
-            this._protectedHeader.crit.includes('b64') &&
-            this._protectedHeader.b64 === false) {
-            throw new errors_js_1.JWTInvalid('JWTs MUST NOT use unencoded payload');
-        }
-        return sig.sign(key, options);
-    }
-}
-exports.SignJWT = SignJWT;
-exports.default = SignJWT;
-
+module.exports = require("body-parser@1.12.4");
 
 /***/ }),
 /* 5 */
@@ -1550,61 +1554,13 @@ exports.default = validateCrit;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const epoch_js_1 = __webpack_require__(27);
-const is_object_js_1 = __webpack_require__(28);
-const secs_js_1 = __webpack_require__(29);
-class ProduceJWT {
-    constructor(payload) {
-        if (!(0, is_object_js_1.default)(payload)) {
-            throw new TypeError('JWT Claims Set MUST be an object');
-        }
-        this._payload = payload;
-    }
-    setIssuer(issuer) {
-        this._payload = { ...this._payload, iss: issuer };
-        return this;
-    }
-    setSubject(subject) {
-        this._payload = { ...this._payload, sub: subject };
-        return this;
-    }
-    setAudience(audience) {
-        this._payload = { ...this._payload, aud: audience };
-        return this;
-    }
-    setJti(jwtId) {
-        this._payload = { ...this._payload, jti: jwtId };
-        return this;
-    }
-    setNotBefore(input) {
-        if (typeof input === 'number') {
-            this._payload = { ...this._payload, nbf: input };
-        }
-        else {
-            this._payload = { ...this._payload, nbf: (0, epoch_js_1.default)(new Date()) + (0, secs_js_1.default)(input) };
-        }
-        return this;
-    }
-    setExpirationTime(input) {
-        if (typeof input === 'number') {
-            this._payload = { ...this._payload, exp: input };
-        }
-        else {
-            this._payload = { ...this._payload, exp: (0, epoch_js_1.default)(new Date()) + (0, secs_js_1.default)(input) };
-        }
-        return this;
-    }
-    setIssuedAt(input) {
-        if (typeof input === 'undefined') {
-            this._payload = { ...this._payload, iat: (0, epoch_js_1.default)(new Date()) };
-        }
-        else {
-            this._payload = { ...this._payload, iat: input };
-        }
-        return this;
-    }
+exports.parseJwk = void 0;
+const import_js_1 = __webpack_require__(27);
+async function parseJwk(jwk, alg, octAsKeyObject) {
+    return (0, import_js_1.importJWK)(jwk, alg, octAsKeyObject);
 }
-exports.default = ProduceJWT;
+exports.parseJwk = parseJwk;
+exports.default = parseJwk;
 
 
 /***/ }),
@@ -1614,119 +1570,14 @@ exports.default = ProduceJWT;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = (date) => Math.floor(date.getTime() / 1000);
-
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-function isObjectLike(value) {
-    return typeof value === 'object' && value !== null;
-}
-function isObject(input) {
-    if (!isObjectLike(input) || Object.prototype.toString.call(input) !== '[object Object]') {
-        return false;
-    }
-    if (Object.getPrototypeOf(input) === null) {
-        return true;
-    }
-    let proto = input;
-    while (Object.getPrototypeOf(proto) !== null) {
-        proto = Object.getPrototypeOf(proto);
-    }
-    return Object.getPrototypeOf(input) === proto;
-}
-exports.default = isObject;
-
-
-/***/ }),
-/* 29 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const minute = 60;
-const hour = minute * 60;
-const day = hour * 24;
-const week = day * 7;
-const year = day * 365.25;
-const REGEX = /^(\d+|\d+\.\d+) ?(seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)$/i;
-exports.default = (str) => {
-    const matched = REGEX.exec(str);
-    if (!matched) {
-        throw new TypeError('Invalid time period format');
-    }
-    const value = parseFloat(matched[1]);
-    const unit = matched[2].toLowerCase();
-    switch (unit) {
-        case 'sec':
-        case 'secs':
-        case 'second':
-        case 'seconds':
-        case 's':
-            return Math.round(value);
-        case 'minute':
-        case 'minutes':
-        case 'min':
-        case 'mins':
-        case 'm':
-            return Math.round(value * minute);
-        case 'hour':
-        case 'hours':
-        case 'hr':
-        case 'hrs':
-        case 'h':
-            return Math.round(value * hour);
-        case 'day':
-        case 'days':
-        case 'd':
-            return Math.round(value * day);
-        case 'week':
-        case 'weeks':
-        case 'w':
-            return Math.round(value * week);
-        default:
-            return Math.round(value * year);
-    }
-};
-
-
-/***/ }),
-/* 30 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseJwk = void 0;
-const import_js_1 = __webpack_require__(31);
-async function parseJwk(jwk, alg, octAsKeyObject) {
-    return (0, import_js_1.importJWK)(jwk, alg, octAsKeyObject);
-}
-exports.parseJwk = parseJwk;
-exports.default = parseJwk;
-
-
-/***/ }),
-/* 31 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.importJWK = exports.importPKCS8 = exports.importX509 = exports.importSPKI = void 0;
 const base64url_js_1 = __webpack_require__(7);
-const asn1_js_1 = __webpack_require__(32);
-const asn1_js_2 = __webpack_require__(32);
-const jwk_to_key_js_1 = __webpack_require__(33);
+const asn1_js_1 = __webpack_require__(28);
+const asn1_js_2 = __webpack_require__(28);
+const jwk_to_key_js_1 = __webpack_require__(29);
 const errors_js_1 = __webpack_require__(13);
-const format_pem_js_1 = __webpack_require__(35);
-const is_object_js_1 = __webpack_require__(28);
+const format_pem_js_1 = __webpack_require__(31);
+const is_object_js_1 = __webpack_require__(32);
 function getElement(seq) {
     let result = [];
     let next = 0;
@@ -1846,7 +1697,7 @@ exports.importJWK = importJWK;
 
 
 /***/ }),
-/* 32 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1899,7 +1750,7 @@ exports.fromSPKI = fromSPKI;
 
 
 /***/ }),
-/* 33 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1910,7 +1761,7 @@ const base64url_js_1 = __webpack_require__(7);
 const errors_js_1 = __webpack_require__(13);
 const get_named_curve_js_1 = __webpack_require__(16);
 const check_modulus_length_js_1 = __webpack_require__(20);
-const asn1_sequence_encoder_js_1 = __webpack_require__(34);
+const asn1_sequence_encoder_js_1 = __webpack_require__(30);
 const [major, minor] = process.version
     .substr(1)
     .split('.')
@@ -2027,7 +1878,7 @@ exports.default = parse;
 
 
 /***/ }),
-/* 34 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2124,7 +1975,7 @@ exports.default = DumbAsn1Encoder;
 
 
 /***/ }),
-/* 35 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2137,15 +1988,41 @@ exports.default = (b64, descriptor) => {
 
 
 /***/ }),
-/* 36 */
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function isObjectLike(value) {
+    return typeof value === 'object' && value !== null;
+}
+function isObject(input) {
+    if (!isObjectLike(input) || Object.prototype.toString.call(input) !== '[object Object]') {
+        return false;
+    }
+    if (Object.getPrototypeOf(input) === null) {
+        return true;
+    }
+    let proto = input;
+    while (Object.getPrototypeOf(proto) !== null) {
+        proto = Object.getPrototypeOf(proto);
+    }
+    return Object.getPrototypeOf(input) === proto;
+}
+exports.default = isObject;
+
+
+/***/ }),
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.jwtVerify = void 0;
-const verify_js_1 = __webpack_require__(37);
-const jwt_claims_set_js_1 = __webpack_require__(41);
+const verify_js_1 = __webpack_require__(34);
+const jwt_claims_set_js_1 = __webpack_require__(38);
 const errors_js_1 = __webpack_require__(13);
 async function jwtVerify(jwt, key, options) {
     var _a;
@@ -2165,14 +2042,14 @@ exports.default = jwtVerify;
 
 
 /***/ }),
-/* 37 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.compactVerify = void 0;
-const verify_js_1 = __webpack_require__(38);
+const verify_js_1 = __webpack_require__(35);
 const errors_js_1 = __webpack_require__(13);
 const buffer_utils_js_1 = __webpack_require__(8);
 async function compactVerify(jws, key, options) {
@@ -2202,7 +2079,7 @@ exports.default = compactVerify;
 
 
 /***/ }),
-/* 38 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2210,14 +2087,14 @@ exports.default = compactVerify;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.flattenedVerify = void 0;
 const base64url_js_1 = __webpack_require__(7);
-const verify_js_1 = __webpack_require__(39);
+const verify_js_1 = __webpack_require__(36);
 const errors_js_1 = __webpack_require__(13);
 const buffer_utils_js_1 = __webpack_require__(8);
 const is_disjoint_js_1 = __webpack_require__(23);
-const is_object_js_1 = __webpack_require__(28);
+const is_object_js_1 = __webpack_require__(32);
 const check_key_type_js_1 = __webpack_require__(24);
 const validate_crit_js_1 = __webpack_require__(25);
-const validate_algorithms_js_1 = __webpack_require__(40);
+const validate_algorithms_js_1 = __webpack_require__(37);
 const checkExtensions = validate_crit_js_1.default.bind(undefined, errors_js_1.JWSInvalid, new Map([['b64', true]]));
 const checkAlgOption = validate_algorithms_js_1.default.bind(undefined, 'algorithms');
 async function flattenedVerify(jws, key, options) {
@@ -2320,7 +2197,7 @@ exports.default = flattenedVerify;
 
 
 /***/ }),
-/* 39 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2369,7 +2246,7 @@ exports.default = verify;
 
 
 /***/ }),
-/* 40 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2389,7 +2266,7 @@ exports.default = validateAlgorithms;
 
 
 /***/ }),
-/* 41 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2397,9 +2274,9 @@ exports.default = validateAlgorithms;
 Object.defineProperty(exports, "__esModule", { value: true });
 const errors_js_1 = __webpack_require__(13);
 const buffer_utils_js_1 = __webpack_require__(8);
-const epoch_js_1 = __webpack_require__(27);
-const secs_js_1 = __webpack_require__(29);
-const is_object_js_1 = __webpack_require__(28);
+const epoch_js_1 = __webpack_require__(39);
+const secs_js_1 = __webpack_require__(40);
+const is_object_js_1 = __webpack_require__(32);
 const normalizeTyp = (value) => value.toLowerCase().replace(/^application\//, '');
 const checkAudiencePresence = (audPayload, audOption) => {
     if (typeof audPayload === 'string') {
@@ -2494,27 +2371,90 @@ exports.default = (protectedHeader, encodedPayload, options = {}) => {
 
 
 /***/ }),
-/* 42 */
+/* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = (date) => Math.floor(date.getTime() / 1000);
+
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const minute = 60;
+const hour = minute * 60;
+const day = hour * 24;
+const week = day * 7;
+const year = day * 365.25;
+const REGEX = /^(\d+|\d+\.\d+) ?(seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)$/i;
+exports.default = (str) => {
+    const matched = REGEX.exec(str);
+    if (!matched) {
+        throw new TypeError('Invalid time period format');
+    }
+    const value = parseFloat(matched[1]);
+    const unit = matched[2].toLowerCase();
+    switch (unit) {
+        case 'sec':
+        case 'secs':
+        case 'second':
+        case 'seconds':
+        case 's':
+            return Math.round(value);
+        case 'minute':
+        case 'minutes':
+        case 'min':
+        case 'mins':
+        case 'm':
+            return Math.round(value * minute);
+        case 'hour':
+        case 'hours':
+        case 'hr':
+        case 'hrs':
+        case 'h':
+            return Math.round(value * hour);
+        case 'day':
+        case 'days':
+        case 'd':
+            return Math.round(value * day);
+        case 'week':
+        case 'weeks':
+        case 'w':
+            return Math.round(value * week);
+        default:
+            return Math.round(value * year);
+    }
+};
+
+
+/***/ }),
+/* 41 */
 /***/ (function(module, exports) {
 
 module.exports = require("uuid@8.3.1");
 
 /***/ }),
-/* 43 */
+/* 42 */
 /***/ (function(module, exports) {
 
 module.exports = require("axios@0.21.1");
 
 /***/ }),
-/* 44 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var stringify = __webpack_require__(45);
-var parse = __webpack_require__(48);
-var formats = __webpack_require__(47);
+var stringify = __webpack_require__(44);
+var parse = __webpack_require__(47);
+var formats = __webpack_require__(46);
 
 module.exports = {
     formats: formats,
@@ -2524,14 +2464,14 @@ module.exports = {
 
 
 /***/ }),
-/* 45 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(46);
-var formats = __webpack_require__(47);
+var utils = __webpack_require__(45);
+var formats = __webpack_require__(46);
 
 var arrayPrefixGenerators = {
     brackets: function brackets(prefix) { // eslint-disable-line func-name-matching
@@ -2741,7 +2681,7 @@ module.exports = function (object, opts) {
 
 
 /***/ }),
-/* 46 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2961,7 +2901,7 @@ module.exports = {
 
 
 /***/ }),
-/* 47 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2986,13 +2926,13 @@ module.exports = {
 
 
 /***/ }),
-/* 48 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(46);
+var utils = __webpack_require__(45);
 
 var has = Object.prototype.hasOwnProperty;
 
@@ -3167,13 +3107,13 @@ module.exports = function (str, opts) {
 
 
 /***/ }),
-/* 49 */
+/* 48 */
 /***/ (function(module, exports) {
 
 module.exports = require("url");
 
 /***/ }),
-/* 50 */
+/* 49 */
 /***/ (function(module, exports) {
 
 module.exports = require("querystring");

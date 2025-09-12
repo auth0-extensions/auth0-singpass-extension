@@ -1,7 +1,7 @@
 var express = require('express');
 var Webtask = require('webtask-tools');
 var bodyParser = require('body-parser');
-const { SignJWT } = require('jose/dist/node/cjs/jwt/sign');
+import { CompactSign } from 'jose/dist/node/cjs/jws/compact/sign';
 const { parseJwk } = require('jose/dist/node/cjs/jwk/parse');
 const { jwtVerify } = require('jose/dist/node/cjs/jwt/verify');
 const crypto = require("crypto");
@@ -237,6 +237,8 @@ async function loadPublicKey(config) {
 // }
 
 async function generatePrivateKeyJWT(config) {
+    
+    const ecPrivateKey = await importPKCS8(config.RELYING_PARTY_PRIVATE_KEY, 'ES256');
     // A unique identifier for this specific request, useful for tracing logs.
     const traceId = uuid.v4();
     console.log(`[${traceId}] Attempting to generate Private Key JWT for client: ${config.SINGPASS_CLIENT_ID}`);
@@ -244,7 +246,7 @@ async function generatePrivateKeyJWT(config) {
     try {
         // --- 1. Load the private key ---
         console.log(`[${traceId}] -> Step 1: Loading private key...`);
-        const key = await loadPrivateKey(config);
+       // const key = await loadPrivateKey(config);
         console.log(`[${traceId}] -> Step 1: Private key loaded successfully.`);
 
         // --- 2. Prepare JWT claims and headers ---
@@ -267,7 +269,7 @@ async function generatePrivateKeyJWT(config) {
         console.log(`   - Expiration: 2m`);
 
         // --- 3. Sign the JWT ---
-        const jwt = await new SignJWT({})
+        const jwt = await new CompactSign({})
             .setProtectedHeader(header)
             .setIssuedAt()
             .setIssuer(claims.iss)
@@ -275,7 +277,7 @@ async function generatePrivateKeyJWT(config) {
             .setAudience(claims.aud)
             .setExpirationTime('2m')
             .setJti(claims.jti)
-            .sign(key);
+            .sign(ecPrivateKey);
 
         console.log(`[${traceId}] -> Step 3: JWT signed successfully.`);
         
