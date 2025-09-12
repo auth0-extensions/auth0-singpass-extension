@@ -164,20 +164,25 @@ app.post('/token', async function (req, res) {
     if (context.data.AUTH0_CLIENT_ID === client_id && context.data.AUTH0_CLIENT_SECRET === client_secret) {
         console.log("------ code_verifier -> "+code_verifier);
         const client_assertion = await generatePrivateKeyJWT(context.data);
-        console.log("------ client_assertion -> "+client_assertion);
+        console.log("------ client_assertion -> " + client_assertion);
+        
+        const qstring = {
+            grant_type: 'authorization_code',
+            client_id: context.data.SINGPASS_CLIENT_ID,
+            client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
+            client_assertion: client_assertion,
+            code: code,
+            redirect_uri: redirect_uri,
+            code_verifier: code_verifier
+        };
+
+        console.log("------ qstring -> " + JSON.stringify(qstring));
+
         var options = {
             method: 'POST',
             url: `${context.data.SINGPASS_ENVIRONMENT}/token`,
             headers: { 'content-type': 'application/x-www-form-urlencoded' },
-            data: qs.stringify({
-                grant_type: 'authorization_code',
-                client_id: context.data.SINGPASS_CLIENT_ID,
-                client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
-                client_assertion: client_assertion,
-                code: code,
-                redirect_uri: redirect_uri,
-                code_verifier: code_verifier
-            })
+            data: qs.stringify(qstring)
         };
         try {
             console.log("------ request sent -> ");
