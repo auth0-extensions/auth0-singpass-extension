@@ -163,6 +163,7 @@ app.post('/token', async function (req, res) {
     }
     if (context.data.AUTH0_CLIENT_ID === client_id && context.data.AUTH0_CLIENT_SECRET === client_secret) {
         const client_assertion = await generatePrivateKeyJWT(context.data);
+        console.log("------ client_assertion -> "+client_assertion);
         var options = {
             method: 'POST',
             url: `${context.data.SINGPASS_ENVIRONMENT}/token`,
@@ -179,6 +180,7 @@ app.post('/token', async function (req, res) {
         try {
             const response = await axios.request(options);
             const { id_token } = response.data;
+            console.log("------ id_token -> "+id_token);
             const publicKey = await loadPublicKey(context.data);
             const code_v = new TextEncoder().encode(code_verifier);
             const code_v_s256 = crypto.createHash('sha256').update(code_v).digest('base64').replace(/\//g, '_').replace(/\+/g, '-').replace(/=/g, '');
@@ -196,8 +198,10 @@ app.post('/token', async function (req, res) {
 
         } catch (error) {
             if (error.response) {
+                console.log("------ error -> "+error.response.data);
                 return res.status(error.response.status).send(error.response.data);
             } else {
+                console.log("------ 2. error -> "+error.message);
                 // Something happened in setting up the request that triggered an Error
                 console.log('Error', error.message);
                 return res.status(500).send(error);
