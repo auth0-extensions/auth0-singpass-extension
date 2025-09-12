@@ -84,10 +84,11 @@ app.post('/token', async function (req, res) {
                 client_assertion: client_assertion,
                 code: code,
                 redirect_uri: redirect_uri,
-                code_verifier
+                code_verifier: code_verifier
             })
         };
         try {
+            console.log("------ request sent -> ");
             const response = await axios.request(options);
             const { id_token } = response.data;
             console.log("------ id_token -> "+id_token);
@@ -108,7 +109,7 @@ app.post('/token', async function (req, res) {
 
         } catch (error) {
             if (error.response) {
-                console.log("------ error -> "+JSON.stringify(error.response.data));
+                console.log("------1. error -> "+JSON.stringify(error.response));
                 return res.status(error.response.status).send(error.response.data);
             } else {
                 console.log("------ 2. error -> "+error.message);
