@@ -62,7 +62,10 @@ app.get('/auth', (req, res) => {
 });
 app.post('/token', async function (req, res) {
     const context = req.webtaskContext;
+    console.log('--- Debugging: Starting /token ---');
+    
     const { client_id, client_secret, code, code_verifier, redirect_uri } = req.body;
+    console.log("------ code_verifier -> "+code_verifier);
     if (!client_id || !client_secret) {
         return res.send(400, 'missing client_id / client_secret');
     }
