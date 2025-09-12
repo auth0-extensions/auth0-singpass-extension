@@ -175,7 +175,8 @@ app.post('/token', async function (req, res) {
                 client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
                 client_assertion: client_assertion,
                 code: code,
-                redirect_uri: redirect_uri
+                redirect_uri: redirect_uri,
+                code_verifier: code_verifier
             })
         };
         try {
