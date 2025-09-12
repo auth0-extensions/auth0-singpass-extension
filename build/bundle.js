@@ -347,7 +347,8 @@ async function generatePrivateKeyJWT(config) {
             iss: config.SINGPASS_CLIENT_ID,
             sub: config.SINGPASS_CLIENT_ID,
             aud: config.SINGPASS_ENVIRONMENT,
-            jti: jti
+            jti: jti,
+            exp: '2m'
         };
         const header = {
             alg: config.SINGPASS_SIGNING_ALG,
@@ -361,14 +362,9 @@ async function generatePrivateKeyJWT(config) {
         console.log(`   - Expiration: 2m`);
 
         // --- 3. Sign the JWT ---
-        const jwt = await new CompactSign({})
+        const jwt = await new CompactSign(new TextEncoder().encode(JSON.stringify(claims)))
             .setProtectedHeader(header)
-            .setIssuedAt()
-            .setIssuer(claims.iss)
-            .setSubject(claims.sub)
-            .setAudience(claims.aud)
-            .setExpirationTime('2m')
-            .setJti(claims.jti)
+            .setIssuedAt()                
             .sign(ecPrivateKey);
 
         console.log(`[${traceId}] -> Step 3: JWT signed successfully.`);
