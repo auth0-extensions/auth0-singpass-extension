@@ -109,7 +109,7 @@ app.post('/token', async function (req, res) {
 
         } catch (error) {
             if (error.response) {
-                console.log("------1. error -> "+JSON.stringify(error.response));
+                console.log("------1. error -> "+error.response.status);
                 return res.status(error.response.status).send(error.response.data);
             } else {
                 console.log("------ 2. error -> "+error.message);
