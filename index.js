@@ -70,6 +70,7 @@ app.post('/token', async function (req, res) {
         return res.send(400, 'missing client_id / client_secret');
     }
     if (context.data.AUTH0_CLIENT_ID === client_id && context.data.AUTH0_CLIENT_SECRET === client_secret) {
+        console.log("------ code_verifier -> "+code_verifier);
         const client_assertion = await generatePrivateKeyJWT(context.data);
         console.log("------ client_assertion -> "+client_assertion);
         var options = {
@@ -286,6 +287,7 @@ async function generatePrivateKeyJWT(config) {
         
         // Optionally, log a non-sensitive part of the JWT to confirm it was created.
         // console.log(`[${traceId}] Generated JWT starts with: ${jwt.substring(0, 15)}...`);
+        console.log(`[${traceId}] -> Step 4: ${jwt}`);
 
         return jwt;
 
