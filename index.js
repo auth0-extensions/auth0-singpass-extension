@@ -1,7 +1,7 @@
 var express = require('express');
 var Webtask = require('webtask-tools');
 var bodyParser = require('body-parser');
-import { CompactSign } from 'jose/dist/node/cjs/jws/compact/sign';
+const {CompactSign} =require('jose/dist/node/cjs/jws/compact/sign');
 const { parseJwk } = require('jose/dist/node/cjs/jwk/parse');
 const { jwtVerify } = require('jose/dist/node/cjs/jwt/verify');
 const crypto = require("crypto");

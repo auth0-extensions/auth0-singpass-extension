@@ -88,26 +88,22 @@ module.exports =
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(module) {/* harmony import */ var jose_dist_node_cjs_jws_compact_sign__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
-/* harmony import */ var jose_dist_node_cjs_jws_compact_sign__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jose_dist_node_cjs_jws_compact_sign__WEBPACK_IMPORTED_MODULE_0__);
-var express = __webpack_require__(2);
-var Webtask = __webpack_require__(3);
-var bodyParser = __webpack_require__(4);
-
-const { parseJwk } = __webpack_require__(26);
-const { jwtVerify } = __webpack_require__(33);
-const crypto = __webpack_require__(10);
-const uuid = __webpack_require__(41);
-const axios = __webpack_require__(42).default;
-const qs = __webpack_require__(43);
+var express = __webpack_require__(1);
+var Webtask = __webpack_require__(2);
+var bodyParser = __webpack_require__(3);
+const {CompactSign} =__webpack_require__(4);
+const { parseJwk } = __webpack_require__(25);
+const { jwtVerify } = __webpack_require__(32);
+const crypto = __webpack_require__(9);
+const uuid = __webpack_require__(40);
+const axios = __webpack_require__(41).default;
+const qs = __webpack_require__(42);
 var app = express();
-const url = __webpack_require__(48);
-const querystring = __webpack_require__(49);
-const { importPKCS8 } = __webpack_require__(27);
+const url = __webpack_require__(47);
+const querystring = __webpack_require__(48);
+const { importPKCS8 } = __webpack_require__(26);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -365,7 +361,7 @@ async function generatePrivateKeyJWT(config) {
         console.log(`   - Expiration: 2m`);
 
         // --- 3. Sign the JWT ---
-        const jwt = await new jose_dist_node_cjs_jws_compact_sign__WEBPACK_IMPORTED_MODULE_0__["CompactSign"]({})
+        const jwt = await new CompactSign({})
             .setProtectedHeader(header)
             .setIssuedAt()
             .setIssuer(claims.iss)
@@ -397,65 +393,34 @@ async function generatePrivateKeyJWT(config) {
 
 module.exports = Webtask.fromExpress(app);
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(1)(module)))
 
 /***/ }),
 /* 1 */
 /***/ (function(module, exports) {
 
-module.exports = function(originalModule) {
-	if (!originalModule.webpackPolyfill) {
-		var module = Object.create(originalModule);
-		// module.parent = undefined by default
-		if (!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function() {
-				return module.i;
-			}
-		});
-		Object.defineProperty(module, "exports", {
-			enumerable: true
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
-
+module.exports = require("express@4.17.1");
 
 /***/ }),
 /* 2 */
 /***/ (function(module, exports) {
 
-module.exports = require("express@4.17.1");
+module.exports = require("webtask-tools");
 
 /***/ }),
 /* 3 */
 /***/ (function(module, exports) {
 
-module.exports = require("webtask-tools");
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports) {
-
 module.exports = require("body-parser@1.12.4");
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CompactSign = void 0;
-const sign_js_1 = __webpack_require__(6);
+const sign_js_1 = __webpack_require__(5);
 class CompactSign {
     constructor(payload) {
         this._flattened = new sign_js_1.default(payload);
@@ -477,20 +442,20 @@ exports.default = CompactSign;
 
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FlattenedSign = void 0;
-const base64url_js_1 = __webpack_require__(7);
-const sign_js_1 = __webpack_require__(9);
-const is_disjoint_js_1 = __webpack_require__(23);
-const errors_js_1 = __webpack_require__(13);
-const buffer_utils_js_1 = __webpack_require__(8);
-const check_key_type_js_1 = __webpack_require__(24);
-const validate_crit_js_1 = __webpack_require__(25);
+const base64url_js_1 = __webpack_require__(6);
+const sign_js_1 = __webpack_require__(8);
+const is_disjoint_js_1 = __webpack_require__(22);
+const errors_js_1 = __webpack_require__(12);
+const buffer_utils_js_1 = __webpack_require__(7);
+const check_key_type_js_1 = __webpack_require__(23);
+const validate_crit_js_1 = __webpack_require__(24);
 const checkExtensions = validate_crit_js_1.default.bind(undefined, errors_js_1.JWSInvalid, new Map([['b64', true]]));
 class FlattenedSign {
     constructor(payload) {
@@ -571,14 +536,14 @@ exports.default = FlattenedSign;
 
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.decode = exports.encode = exports.encodeBase64 = exports.decodeBase64 = void 0;
-const buffer_utils_js_1 = __webpack_require__(8);
+const buffer_utils_js_1 = __webpack_require__(7);
 let encodeImpl;
 function normalize(input) {
     let encoded = input;
@@ -603,7 +568,7 @@ exports.decode = decode;
 
 
 /***/ }),
-/* 8 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -675,18 +640,18 @@ exports.concatKdf = concatKdf;
 
 
 /***/ }),
-/* 9 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const crypto = __webpack_require__(10);
-const util_1 = __webpack_require__(11);
-const dsa_digest_js_1 = __webpack_require__(12);
-const hmac_digest_js_1 = __webpack_require__(14);
-const node_key_js_1 = __webpack_require__(15);
-const get_sign_verify_key_js_1 = __webpack_require__(21);
+const crypto = __webpack_require__(9);
+const util_1 = __webpack_require__(10);
+const dsa_digest_js_1 = __webpack_require__(11);
+const hmac_digest_js_1 = __webpack_require__(13);
+const node_key_js_1 = __webpack_require__(14);
+const get_sign_verify_key_js_1 = __webpack_require__(20);
 let oneShotSign;
 if (crypto.sign.length > 3) {
     oneShotSign = (0, util_1.promisify)(crypto.sign);
@@ -711,25 +676,25 @@ exports.default = sign;
 
 
 /***/ }),
-/* 10 */
+/* 9 */
 /***/ (function(module, exports) {
 
 module.exports = require("crypto");
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, exports) {
 
 module.exports = require("util");
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const errors_js_1 = __webpack_require__(13);
+const errors_js_1 = __webpack_require__(12);
 function dsaDigest(alg) {
     switch (alg) {
         case 'PS256':
@@ -755,7 +720,7 @@ exports.default = dsaDigest;
 
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -887,13 +852,13 @@ JWTExpired.code = 'ERR_JWT_EXPIRED';
 
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const errors_js_1 = __webpack_require__(13);
+const errors_js_1 = __webpack_require__(12);
 function hmacDigest(alg) {
     switch (alg) {
         case 'HS256':
@@ -910,16 +875,16 @@ exports.default = hmacDigest;
 
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const crypto_1 = __webpack_require__(10);
-const get_named_curve_js_1 = __webpack_require__(16);
-const errors_js_1 = __webpack_require__(13);
-const check_modulus_length_js_1 = __webpack_require__(20);
+const crypto_1 = __webpack_require__(9);
+const get_named_curve_js_1 = __webpack_require__(15);
+const errors_js_1 = __webpack_require__(12);
+const check_modulus_length_js_1 = __webpack_require__(19);
 const [major, minor] = process.version
     .substr(1)
     .split('.')
@@ -1003,18 +968,18 @@ exports.default = keyForCrypto;
 
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setCurve = exports.weakMap = void 0;
-const crypto_1 = __webpack_require__(10);
-const errors_js_1 = __webpack_require__(13);
-const webcrypto_js_1 = __webpack_require__(17);
-const is_key_object_js_1 = __webpack_require__(18);
-const invalid_key_input_js_1 = __webpack_require__(19);
+const crypto_1 = __webpack_require__(9);
+const errors_js_1 = __webpack_require__(12);
+const webcrypto_js_1 = __webpack_require__(16);
+const is_key_object_js_1 = __webpack_require__(17);
+const invalid_key_input_js_1 = __webpack_require__(18);
 const p256 = Buffer.from([42, 134, 72, 206, 61, 3, 1, 7]);
 const p384 = Buffer.from([43, 129, 4, 0, 34]);
 const p521 = Buffer.from([43, 129, 4, 0, 35]);
@@ -1103,15 +1068,15 @@ exports.default = getNamedCurve;
 
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getKeyObject = exports.isCryptoKey = void 0;
-const crypto = __webpack_require__(10);
-const util = __webpack_require__(11);
+const crypto = __webpack_require__(9);
+const util = __webpack_require__(10);
 const webcrypto = crypto.webcrypto;
 exports.default = webcrypto;
 exports.isCryptoKey = util.types.isCryptoKey
@@ -1269,27 +1234,27 @@ exports.getKeyObject = getKeyObject;
 
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const crypto_1 = __webpack_require__(10);
-const util = __webpack_require__(11);
+const crypto_1 = __webpack_require__(9);
+const util = __webpack_require__(10);
 exports.default = util.types.isKeyObject
     ? (obj) => util.types.isKeyObject(obj)
     : (obj) => obj != null && obj instanceof crypto_1.KeyObject;
 
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const util_1 = __webpack_require__(11);
+const util_1 = __webpack_require__(10);
 exports.default = (actual, ...types) => {
     let msg = 'Key must be ';
     if (types.length > 2) {
@@ -1328,7 +1293,7 @@ exports.default = (actual, ...types) => {
 
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1387,16 +1352,16 @@ exports.default = (key, alg) => {
 
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const crypto = __webpack_require__(10);
-const webcrypto_js_1 = __webpack_require__(17);
-const secret_key_js_1 = __webpack_require__(22);
-const invalid_key_input_js_1 = __webpack_require__(19);
+const crypto = __webpack_require__(9);
+const webcrypto_js_1 = __webpack_require__(16);
+const secret_key_js_1 = __webpack_require__(21);
+const invalid_key_input_js_1 = __webpack_require__(18);
 function getSignVerifyKey(alg, key, usage) {
     if (key instanceof Uint8Array) {
         if (!alg.startsWith('HS')) {
@@ -1416,13 +1381,13 @@ exports.default = getSignVerifyKey;
 
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const crypto_1 = __webpack_require__(10);
+const crypto_1 = __webpack_require__(9);
 function getSecretKey(key) {
     let keyObject;
     if (key instanceof Uint8Array) {
@@ -1437,7 +1402,7 @@ exports.default = getSecretKey;
 
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1468,13 +1433,13 @@ exports.default = isDisjoint;
 
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const invalid_key_input_js_1 = __webpack_require__(19);
+const invalid_key_input_js_1 = __webpack_require__(18);
 const checkKeyType = (alg, key, usage) => {
     if (!(key instanceof Uint8Array) && !(key === null || key === void 0 ? void 0 : key.type)) {
         throw new TypeError((0, invalid_key_input_js_1.default)(key, 'KeyObject', 'CryptoKey', 'Uint8Array'));
@@ -1505,13 +1470,13 @@ exports.default = checkKeyType;
 
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const errors_js_1 = __webpack_require__(13);
+const errors_js_1 = __webpack_require__(12);
 function validateCrit(Err, recognizedDefault, recognizedOption, protectedHeader, joseHeader) {
     if (joseHeader.crit !== undefined && protectedHeader.crit === undefined) {
         throw new Err('"crit" (Critical) Header Parameter MUST be integrity protected');
@@ -1548,14 +1513,14 @@ exports.default = validateCrit;
 
 
 /***/ }),
-/* 26 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseJwk = void 0;
-const import_js_1 = __webpack_require__(27);
+const import_js_1 = __webpack_require__(26);
 async function parseJwk(jwk, alg, octAsKeyObject) {
     return (0, import_js_1.importJWK)(jwk, alg, octAsKeyObject);
 }
@@ -1564,20 +1529,20 @@ exports.default = parseJwk;
 
 
 /***/ }),
-/* 27 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.importJWK = exports.importPKCS8 = exports.importX509 = exports.importSPKI = void 0;
-const base64url_js_1 = __webpack_require__(7);
-const asn1_js_1 = __webpack_require__(28);
-const asn1_js_2 = __webpack_require__(28);
-const jwk_to_key_js_1 = __webpack_require__(29);
-const errors_js_1 = __webpack_require__(13);
-const format_pem_js_1 = __webpack_require__(31);
-const is_object_js_1 = __webpack_require__(32);
+const base64url_js_1 = __webpack_require__(6);
+const asn1_js_1 = __webpack_require__(27);
+const asn1_js_2 = __webpack_require__(27);
+const jwk_to_key_js_1 = __webpack_require__(28);
+const errors_js_1 = __webpack_require__(12);
+const format_pem_js_1 = __webpack_require__(30);
+const is_object_js_1 = __webpack_require__(31);
 function getElement(seq) {
     let result = [];
     let next = 0;
@@ -1697,17 +1662,17 @@ exports.importJWK = importJWK;
 
 
 /***/ }),
-/* 28 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fromSPKI = exports.fromPKCS8 = exports.toPKCS8 = exports.toSPKI = void 0;
-const crypto_1 = __webpack_require__(10);
-const webcrypto_js_1 = __webpack_require__(17);
-const is_key_object_js_1 = __webpack_require__(18);
-const invalid_key_input_js_1 = __webpack_require__(19);
+const crypto_1 = __webpack_require__(9);
+const webcrypto_js_1 = __webpack_require__(16);
+const is_key_object_js_1 = __webpack_require__(17);
+const invalid_key_input_js_1 = __webpack_require__(18);
 const genericExport = (keyType, keyFormat, key) => {
     let keyObject;
     if ((0, webcrypto_js_1.isCryptoKey)(key)) {
@@ -1750,18 +1715,18 @@ exports.fromSPKI = fromSPKI;
 
 
 /***/ }),
-/* 29 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const crypto_1 = __webpack_require__(10);
-const base64url_js_1 = __webpack_require__(7);
-const errors_js_1 = __webpack_require__(13);
-const get_named_curve_js_1 = __webpack_require__(16);
-const check_modulus_length_js_1 = __webpack_require__(20);
-const asn1_sequence_encoder_js_1 = __webpack_require__(30);
+const crypto_1 = __webpack_require__(9);
+const base64url_js_1 = __webpack_require__(6);
+const errors_js_1 = __webpack_require__(12);
+const get_named_curve_js_1 = __webpack_require__(15);
+const check_modulus_length_js_1 = __webpack_require__(19);
+const asn1_sequence_encoder_js_1 = __webpack_require__(29);
 const [major, minor] = process.version
     .substr(1)
     .split('.')
@@ -1878,13 +1843,13 @@ exports.default = parse;
 
 
 /***/ }),
-/* 30 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const errors_js_1 = __webpack_require__(13);
+const errors_js_1 = __webpack_require__(12);
 const tagInteger = 0x02;
 const tagBitStr = 0x03;
 const tagOctStr = 0x04;
@@ -1975,7 +1940,7 @@ exports.default = DumbAsn1Encoder;
 
 
 /***/ }),
-/* 31 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1988,7 +1953,7 @@ exports.default = (b64, descriptor) => {
 
 
 /***/ }),
-/* 32 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2014,16 +1979,16 @@ exports.default = isObject;
 
 
 /***/ }),
-/* 33 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.jwtVerify = void 0;
-const verify_js_1 = __webpack_require__(34);
-const jwt_claims_set_js_1 = __webpack_require__(38);
-const errors_js_1 = __webpack_require__(13);
+const verify_js_1 = __webpack_require__(33);
+const jwt_claims_set_js_1 = __webpack_require__(37);
+const errors_js_1 = __webpack_require__(12);
 async function jwtVerify(jwt, key, options) {
     var _a;
     const verified = await (0, verify_js_1.default)(jwt, key, options);
@@ -2042,16 +2007,16 @@ exports.default = jwtVerify;
 
 
 /***/ }),
-/* 34 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.compactVerify = void 0;
-const verify_js_1 = __webpack_require__(35);
-const errors_js_1 = __webpack_require__(13);
-const buffer_utils_js_1 = __webpack_require__(8);
+const verify_js_1 = __webpack_require__(34);
+const errors_js_1 = __webpack_require__(12);
+const buffer_utils_js_1 = __webpack_require__(7);
 async function compactVerify(jws, key, options) {
     if (jws instanceof Uint8Array) {
         jws = buffer_utils_js_1.decoder.decode(jws);
@@ -2079,22 +2044,22 @@ exports.default = compactVerify;
 
 
 /***/ }),
-/* 35 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.flattenedVerify = void 0;
-const base64url_js_1 = __webpack_require__(7);
-const verify_js_1 = __webpack_require__(36);
-const errors_js_1 = __webpack_require__(13);
-const buffer_utils_js_1 = __webpack_require__(8);
-const is_disjoint_js_1 = __webpack_require__(23);
-const is_object_js_1 = __webpack_require__(32);
-const check_key_type_js_1 = __webpack_require__(24);
-const validate_crit_js_1 = __webpack_require__(25);
-const validate_algorithms_js_1 = __webpack_require__(37);
+const base64url_js_1 = __webpack_require__(6);
+const verify_js_1 = __webpack_require__(35);
+const errors_js_1 = __webpack_require__(12);
+const buffer_utils_js_1 = __webpack_require__(7);
+const is_disjoint_js_1 = __webpack_require__(22);
+const is_object_js_1 = __webpack_require__(31);
+const check_key_type_js_1 = __webpack_require__(23);
+const validate_crit_js_1 = __webpack_require__(24);
+const validate_algorithms_js_1 = __webpack_require__(36);
 const checkExtensions = validate_crit_js_1.default.bind(undefined, errors_js_1.JWSInvalid, new Map([['b64', true]]));
 const checkAlgOption = validate_algorithms_js_1.default.bind(undefined, 'algorithms');
 async function flattenedVerify(jws, key, options) {
@@ -2197,18 +2162,18 @@ exports.default = flattenedVerify;
 
 
 /***/ }),
-/* 36 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const crypto = __webpack_require__(10);
-const util_1 = __webpack_require__(11);
-const dsa_digest_js_1 = __webpack_require__(12);
-const node_key_js_1 = __webpack_require__(15);
-const sign_js_1 = __webpack_require__(9);
-const get_sign_verify_key_js_1 = __webpack_require__(21);
+const crypto = __webpack_require__(9);
+const util_1 = __webpack_require__(10);
+const dsa_digest_js_1 = __webpack_require__(11);
+const node_key_js_1 = __webpack_require__(14);
+const sign_js_1 = __webpack_require__(8);
+const get_sign_verify_key_js_1 = __webpack_require__(20);
 const [major, minor] = process.version
     .substr(1)
     .split('.')
@@ -2246,7 +2211,7 @@ exports.default = verify;
 
 
 /***/ }),
-/* 37 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2266,17 +2231,17 @@ exports.default = validateAlgorithms;
 
 
 /***/ }),
-/* 38 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const errors_js_1 = __webpack_require__(13);
-const buffer_utils_js_1 = __webpack_require__(8);
-const epoch_js_1 = __webpack_require__(39);
-const secs_js_1 = __webpack_require__(40);
-const is_object_js_1 = __webpack_require__(32);
+const errors_js_1 = __webpack_require__(12);
+const buffer_utils_js_1 = __webpack_require__(7);
+const epoch_js_1 = __webpack_require__(38);
+const secs_js_1 = __webpack_require__(39);
+const is_object_js_1 = __webpack_require__(31);
 const normalizeTyp = (value) => value.toLowerCase().replace(/^application\//, '');
 const checkAudiencePresence = (audPayload, audOption) => {
     if (typeof audPayload === 'string') {
@@ -2371,7 +2336,7 @@ exports.default = (protectedHeader, encodedPayload, options = {}) => {
 
 
 /***/ }),
-/* 39 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2381,7 +2346,7 @@ exports.default = (date) => Math.floor(date.getTime() / 1000);
 
 
 /***/ }),
-/* 40 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2434,27 +2399,27 @@ exports.default = (str) => {
 
 
 /***/ }),
-/* 41 */
+/* 40 */
 /***/ (function(module, exports) {
 
 module.exports = require("uuid@8.3.1");
 
 /***/ }),
-/* 42 */
+/* 41 */
 /***/ (function(module, exports) {
 
 module.exports = require("axios@0.21.1");
 
 /***/ }),
-/* 43 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var stringify = __webpack_require__(44);
-var parse = __webpack_require__(47);
-var formats = __webpack_require__(46);
+var stringify = __webpack_require__(43);
+var parse = __webpack_require__(46);
+var formats = __webpack_require__(45);
 
 module.exports = {
     formats: formats,
@@ -2464,14 +2429,14 @@ module.exports = {
 
 
 /***/ }),
-/* 44 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(45);
-var formats = __webpack_require__(46);
+var utils = __webpack_require__(44);
+var formats = __webpack_require__(45);
 
 var arrayPrefixGenerators = {
     brackets: function brackets(prefix) { // eslint-disable-line func-name-matching
@@ -2681,7 +2646,7 @@ module.exports = function (object, opts) {
 
 
 /***/ }),
-/* 45 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2901,7 +2866,7 @@ module.exports = {
 
 
 /***/ }),
-/* 46 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2926,13 +2891,13 @@ module.exports = {
 
 
 /***/ }),
-/* 47 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var utils = __webpack_require__(45);
+var utils = __webpack_require__(44);
 
 var has = Object.prototype.hasOwnProperty;
 
@@ -3107,13 +3072,13 @@ module.exports = function (str, opts) {
 
 
 /***/ }),
-/* 48 */
+/* 47 */
 /***/ (function(module, exports) {
 
 module.exports = require("url");
 
 /***/ }),
-/* 49 */
+/* 48 */
 /***/ (function(module, exports) {
 
 module.exports = require("querystring");
