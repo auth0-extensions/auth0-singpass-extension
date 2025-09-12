@@ -348,6 +348,7 @@ async function generatePrivateKeyJWT(config) {
             sub: config.SINGPASS_CLIENT_ID,
             aud: config.SINGPASS_ENVIRONMENT,
             jti: jti,
+            iat: Math.floor(Date.now() / 1000),
             exp: '2m'
         };
         const header = {
@@ -363,8 +364,7 @@ async function generatePrivateKeyJWT(config) {
 
         // --- 3. Sign the JWT ---
         const jwt = await new CompactSign(new TextEncoder().encode(JSON.stringify(claims)))
-            .setProtectedHeader(header)
-            .setIssuedAt()                
+            .setProtectedHeader(header)           
             .sign(ecPrivateKey);
 
         console.log(`[${traceId}] -> Step 3: JWT signed successfully.`);
