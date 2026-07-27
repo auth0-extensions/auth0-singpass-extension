@@ -18,7 +18,7 @@
     "license": "ISC",
     "dependencies": {
         "axios": "^0.21.1",
-        "body-parser": "~1.18.2",
+        "body-parser": "~1.20.6",
         "express": "~4.16.2",
         "jose": "^3.15.4",
         "uuid": "8.3.1"
